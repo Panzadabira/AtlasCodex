@@ -1,6 +1,11 @@
 ﻿# Atlas Codex (v1.0.0)
 ### *Universal Polyglot Architecture Mapping & Static Analysis Engine*
 **Atlas Codex** is a standalone, polyglot static analysis suite designed for **zero-latency architectural mapping** of complex codebases (Unity/C#, Python, Java, C++, HTML, UXML, USS, CSS, JS). It transforms raw directory structures into an interactive **cosmological relational graph** (the *Planetarium*), while surgically optimizing context payloads for Local and Cloud LLMs through our proprietary **Eco-Scan protocol**, slashing token waste by up to **95%**.
+
+<p align="center">
+  <img src="assets/demo.gif" alt="Atlas Codex Demo" width="700">
+</p>
+
 ### Open-Source Collaboration
 This project is a labor of love and a testament to the power of open-source collaboration. We welcome contributions from developers, researchers, and enthusiasts across all levels of expertise. Whether you have a bug fix, a new feature, or just want to share your thoughts, check the Issues tab for open tasks or open a new one to propose a feature.
 ## Core Features
