@@ -55,7 +55,7 @@ The *Planetarium* map uses custom orbital geometries and distinct colors to repr
 ### Installation & Run
 
 1. **Clone the repository:**
-```bash
+bash
    git clone [https://github.com/Panzadabira/PanzaScope.git](https://github.com/Panzadabira/PanzaScope.git)
    cd PanzaScope
 Install dependencies:
@@ -71,7 +71,10 @@ Run:
 
 Bash
    python main.py
-The Panza Labs Ecosystem
+
+   ---
+
+### The Panza Labs Ecosystem
 This repository serves as the core open-source engine of PanzaScope. If you are developing complex gamedev pipelines and want a frictionless, unified workflow:
 
 PanzaScope for Unity Editor
@@ -81,19 +84,20 @@ The Premium Unity Asset integrates the Planetarium graph directly inside Unity a
 
 The core engine remains free and open-source. If you find PanzaScope valuable, consider supporting its long-term development by purchasing the Premium Unity Editor Integration.
 
-Base File Architecture
-main.py: Hardened entrypoint.
+___
 
-Panza_UI.py: Interactive hub (Tkinter) with GitHub Dark aesthetics.
+## Base File Architecture
+**main.py**: Hardened entrypoint.
 
-Panza_Generator.py: Pipeline coordinator.
+**Panza_UI.py**: Interactive hub (Tkinter) with GitHub Dark aesthetics.
 
-Panza_Analyzer.py: Extensible static analysis hub (Strategy Pattern).
+**Panza_Generator.py**: Pipeline coordinator.
+**Panza_Analyzer.py**: Extensible static analysis hub (Strategy Pattern).
 
-PanzaTemplate.html: High-performance canvas view (Glassmorphism & Vis.js).
+**PanzaTemplate.html**: High-performance canvas view (Glassmorphism & Vis.js).
 
-processors/: The extensible heart — add new language processors here!
+**processors/**: The extensible heart — add new language processors here!
 
-⚖️ License: Distributed under the MIT License.
+⚖️ **License: Distributed under the MIT License.**
 
 Built with passion for developers by Panza Labs.
