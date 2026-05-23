@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Atlas Codex</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body { background: #0b0e14; color: #c9d1d9; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        #filter-bar { background: #161b22; padding: 10px 20px; border-bottom: 1px solid #30363d; display: flex; gap: 15px; align-items: center; z-index: 100; }
+        #search-input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 6px 12px; border-radius: 6px; width: 200px; }
+        .layer-btn { cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #30363d; background: #161b22; color: #8b949e; display: flex; align-items: center; gap: 5px; }
+        .layer-btn.active { border-color: #238636; color: #e6edf3; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        
+        #workspace { display: flex; flex: 1; height: calc(100vh - 50px); overflow: hidden; }
+        #network-container { flex: 1; position: relative; background: radial-gradient(circle, #10141b 0%, #0b0e14 100%); overflow: hidden; }
+        #network { position: absolute; top: 0; left: 0; right: 0; bottom: 0; cursor: crosshair; }
+
+        #code-panel { width: 550px; background: #0d1117; border-left: 1px solid #30363d; display: flex; flex-direction: column; z-index: 50; overflow-y: auto; box-shadow: -5px 0 15px rgba(0,0,0,0.3); }
+        .panel-header { padding: 15px 20px; background: #161b22; border-bottom: 2px solid #238636; font-weight: bold; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .detail-section { padding: 20px; }
+        
+        .section-title { font-size: 10px; text-transform: uppercase; color: #8b949e; margin: 15px 0 8px 0; display: block; font-weight: bold; border-bottom: 1px solid #30363d; padding-bottom: 4px; }
+        .ai-summary { font-style: italic; color: #e6edf3; border-left: 3px solid #238636; padding: 10px 12px; margin: 10px 0; background: rgba(35, 134, 54, 0.05); line-height: 1.4; }
+        
+        .tag-container { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+        .tag { font-size: 10px; padding: 2px 8px; border-radius: 3px; background: #21262d; border: 1px solid #30363d; color: #c9d1d9; transition: all 0.2s ease; }
+        .tag.superior { color: #a371f7; border-color: #a371f7; background: rgba(163, 113, 247, 0.1); }
+        .tag.unity { color: #58a6ff; border-color: #388bfd; background: rgba(56, 139, 253, 0.1); display: block; width: 100%; text-align: left; margin-bottom: 2px; font-family: monospace; }
+        .tag.dep { color: #d29922; border-color: #bb8009; background: rgba(210, 153, 34, 0.05); }
+        .tag.expensive { color: #ffa657; border-color: #ffa657; background: rgba(255, 166, 87, 0.1); font-weight: bold; }
+        
+        .tag.clickable { cursor: pointer; }
+        .tag.clickable:hover { transform: translateY(-2px); filter: brightness(1.4); box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
+        
+        pre { background: #010409; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 11px; border: 1px solid #30363d; color: #d1d7e0; line-height: 1.5; }
+        code { font-family: 'Consolas', 'Courier New', monospace; }
+        .god-alert { background: rgba(248, 81, 73, 0.1); color: #f85149; border: 1px solid #f85149; padding: 10px; border-radius: 6px; font-size: 11px; margin-bottom: 15px; font-weight: bold; }
+        
+        .defcon-banner { padding: 12px; border-radius: 6px; font-weight: bold; text-align: center; margin-bottom: 15px; font-size: 12px; border: 1px solid; display: flex; align-items: center; justify-content: flex-start; }
+        .defcon-1 { background: rgba(35, 134, 54, 0.1); color: #7ee787; border-color: #238636; }
+        .defcon-2 { background: rgba(210, 153, 34, 0.1); color: #e3b341; border-color: #bb8009; }
+        .defcon-3 { background: rgba(248, 81, 73, 0.1); color: #f85149; border-color: #da3633; box-shadow: 0 0 10px rgba(248, 81, 73, 0.2); }
+        .density-alert { background: #da3633; color: white; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; margin-bottom: 10px; }
+
+        #help-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        #help-modal { background: #161b22; width: 580px; max-height: 85vh; border: 1px solid #30363d; border-radius: 12px; padding: 25px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        
+        .accordion-item { background: #161b22; border: 1px solid #30363d; border-radius: 6px; margin-bottom: 6px; overflow: hidden; }
+        .accordion-header { background: #1f242c; padding: 10px 14px; font-size: 11px; font-weight: bold; color: #e6edf3; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+        .accordion-header:hover { background: #282e38; color: #7ee787; }
+        .accordion-content { padding: 12px 14px; font-size: 12px; color: #8b949e; line-height: 1.5; background: #0d1117; border-top: 1px solid #30363d; display: none; }
+        .help-macro-title { font-size: 12px; font-weight: bold; margin-top: 16px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px dashed #30363d; padding-bottom: 3px; }
+
+        .overview-list-item { font-size: 11px; padding: 5px 8px; cursor: pointer; border-bottom: 1px solid #21262d; border-radius: 3px; transition: background 0.2s; font-family: monospace; text-align: left; }
+        .overview-list-item:hover { background: #1f242c; filter: brightness(1.2); }
+
+        .ui-info { position: absolute; bottom: 20px; left: 20px; pointer-events: none; z-index: 10; }
+        h1 { margin: 0; font-size: 18px; color: #238636; letter-spacing: 1px; }
+
+        .ai-copy-btn { display: none; font-size: 10px; cursor: pointer; background: #238636; color: #fff; border: 1px solid #2ea043; padding: 4px 10px; border-radius: 4px; font-weight: bold; transition: all 0.2s; }
+        .ai-copy-btn:hover { background: #2ea043; }
+        .ai-copy-btn.copied { background: #21262d; border-color: #7ee787; color: #7ee787; }
+
+        .context-toggle-panel { background: #161b22; border: 1px solid #30363d; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+        .toggle-btn-group { display: flex; gap: 6px; margin-top: 6px; margin-bottom: 8px; }
+        .toggle-opt { flex: 1; cursor: pointer; padding: 5px; text-align: center; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #30363d; background: #0d1117; color: #8b949e; }
+        .toggle-opt.active { background: #238636; color: white; border-color: #2ea043; }
+        .risk-text { font-size: 11px; font-weight: bold; }
+        .risk-low { color: #7ee787; }
+        .risk-med { color: #e3b341; }
+        .risk-high { color: #f85149; }
+
+        .banner-circle { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
+        .legend-circle { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+
+        /* 🌀 STILI OVERLAY DI CARICAMENTO AUTOMATICO ANTI-VIBRAZIONE */
+        #loading-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0b0e14; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.4s ease;
+        }
+        .spinner {
+            width: 45px; height: 45px; border: 4px solid #161b22;
+            border-top: 4px solid #2ea043; border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin-bottom: 15px;
+        }
+        .loading-text { font-size: 14px; font-weight: bold; color: #2ea043; letter-spacing: 0.5px; font-family: monospace; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="load-title">🛰️ ATLAS PIPELINE: STABILIZING MAPPINGS...</div>
+    </div>
+
+    <div id="filter-bar">
+        <input type="text" id="search-input" placeholder="__L_SEARCH__" oninput="onSearch()">
+        <div id="layer-filters" style="display: flex; gap: 8px;">
+            <div class="layer-btn active" onclick="toggleLayer('L0')"><div class="dot" style="background:#a371f7"></div> __L_L0__</div>
+            <div class="layer-btn active" onclick="toggleLayer('L1')"><div class="dot" style="background:#79c0ff"></div> __L_L1__</div>
+            <div class="layer-btn active" onclick="toggleLayer('L2')"><div class="dot" style="background:#ffa657"></div> __L_L2__</div>
+            <div class="layer-btn active" onclick="toggleLayer('L3')"><div class="dot" style="background:#7ee787"></div> __L_L3__</div>
+            <div class="layer-btn active" onclick="toggleLayer('L4')"><div class="dot" style="background:#f85149"></div> __L_L4__</div>
+        </div>
+        <div class="layer-btn" onclick="window.location.reload();" style="margin-left: 10px; background: #1f6feb; color: white; border-color: #388bfd;" data-i18n="__L_REFRESH_BTN__">__L_REFRESH_BTN__</div>
+        <div class="layer-btn" onclick="toggleHelp()" style="margin-left: 10px; background: #238636; color: white;" data-i18n="__L_HELP_BTN__">__L_HELP_BTN__</div>
+        <div id="scan-timestamp" style="margin-left: auto; font-size: 11px; color: #8b949e;"></div>
+    </div>
+
+    <div id="help-overlay" onclick="toggleHelp()">
+        <div id="help-modal" onclick="event.stopPropagation()">
+            <h2 style="color:#7ee787; margin-top:0; border-bottom:1px solid #30363d; padding-bottom:8px; font-size:16px;">__L_HELP_BTN__</h2>
+            
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:15px; font-size:10px; background:#0d1117; padding:8px 12px; border-radius:6px; border:1px solid #30363d; color:#8b949e; font-family:monospace;">
+                <span><span class="legend-circle" style="background:#a371f7;"></span>L0</span>
+                <span><span class="legend-circle" style="background:#79c0ff;"></span>L1</span>
+                <span><span class="legend-circle" style="background:#ffa657;"></span>L2</span>
+                <span><span class="legend-circle" style="background:#7ee787;"></span>L3</span>
+                <span><span class="legend-circle" style="background:#f85149;"></span>L4</span>
+                <span style="flex-grow:1; text-align:right; border-left:1px solid #30363d; padding-left:10px;"></span>
+                <span><span class="legend-circle" style="background:#7ee787;"></span>Defcon 1</span>
+                <span><span class="legend-circle" style="background:#e3b341;"></span>Defcon 2</span>
+                <span><span class="legend-circle" style="background:#f85149;"></span>Defcon 3</span>
+            </div>
+
+            <div class="help-macro-title" style="color:#a371f7;">__L_FEAT_TITLE_A1__</div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_MAP_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_MAP_D__</div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_IMPACT_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_IMPACT_D__</div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_GOD_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_GOD_D__</div>
+            </div>
+
+            <div class="help-macro-title" style="color:#ffa657;">__L_FEAT_TITLE_A2__</div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_DEFCON_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_DEFCON_D__</div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_PERF_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_PERF_D__</div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_DENSITY_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_DENSITY_D__</div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_DEBT_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_DEBT_D__</div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_FRESH_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_FRESH_D__</div>
+            </div>
+
+            <div class="help-macro-title" style="color:#58a6ff;">__L_FEAT_TITLE_A3__</div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_CONTEXT_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_CONTEXT_D__</div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_RISK_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_RISK_D__</div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>__L_FEAT_SUM_T__</span><span>+</span></div>
+                <div class="accordion-content">__L_FEAT_SUM_D__</div>
+            </div>
+
+            <div style="text-align: right; margin-top: 15px;">
+                <button onclick="toggleHelp()" style="cursor:pointer; padding: 6px 18px; background: #21262d; color: #fff; border: 1px solid #30363d; border-radius: 4px; font-weight: bold; font-size: 11px;">__L_CLOSE__</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="workspace">
+        <div id="network-container">
+            <div id="network"></div>
+            <div class="ui-info">
+                <h1 id="proj-title-head">ATLAS CODEX</h1>
+                <div style="font-size: 10px; color: #8b949e;">Planetarium Orbit Engine v1.1.0</div>
+            </div>
+        </div>
+        <div id="code-panel">
+            <div class="panel-header">
+                <span id="p-title">__L_OVERVIEW_TITLE__</span>
+                <div style="display: flex; gap: 8px;">
+                    <button id="btn-copy-llm" class="ai-copy-btn" onclick="copyContextForLLM()">__L_COPY_LLM__</button>
+                    <button onclick="resetFocus()" style="font-size:10px; cursor:pointer; background:#21262d; color:#fff; border:1px solid #30363d; padding:4px 8px; border-radius:4px;">__L_RESET__</button>
+                </div>
+            </div>
+            <div id="p-content" class="detail-section"></div>
+        </div>
+    </div>
+
+    <script src="atlas_data.js"></script>
+
+    <script>
+        var atlasLang = (typeof AtlasData !== 'undefined' && AtlasData.language) ? AtlasData.language.toLowerCase() : 'en';
+        document.write('<script src="' + atlasLang + '.js"><\/script>');
+    </script>
+
+    <script>
+        var network, nodes, edges;
+        var currentSelectedId = null;
+        var currentContextMode = 'map'; 
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof AtlasData === 'undefined' || typeof AtlasLocalization === 'undefined') {
+                console.error("[Atlas Codex] Dati JSON o Dizionario atomico JS mancanti.");
+                return;
+            }
+
+            var dict = AtlasLocalization; 
+            
+            var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+                acceptNode: function(node) {
+                    if (node.parentNode.nodeName === 'SCRIPT' || node.parentNode.nodeName === 'STYLE') {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+            }, false);
+            
+            var node;
+            while (node = walker.nextNode()) {
+                var text = node.nodeValue;
+                var replaced = false;
+                for (var key in dict) {
+                    if (text.includes(key)) {
+                        text = text.split(key).join(dict[key]);
+                        replaced = true;
+                    }
+                }
+                if (replaced) node.nodeValue = text;
+            }
+
+            document.querySelectorAll('[placeholder]').forEach(function(el) {
+                for (var key in dict) {
+                    if (el.placeholder.includes(key)) {
+                        el.placeholder = el.placeholder.split(key).join(dict[key]);
+                    }
+                }
+            });
+
+            document.title = AtlasData.project_name + " Codex";
+            var uiTitle = document.getElementById('proj-title-head');
+            if(uiTitle) uiTitle.innerHTML = AtlasData.project_name.toUpperCase() + " CODEX";
+            
+            var ts = document.getElementById('scan-timestamp');
+            if(ts) ts.innerHTML = AtlasData.scan_timestamp;
+        });
+
+        window.onload = function() {
+            try {
+                if (typeof AtlasData === 'undefined') return;
+
+                nodes = new vis.DataSet(AtlasData.nodes.map(n => {
+                    var baseColor = n.layer==='L0'?'#a371f7':n.layer==='L1'?'#79c0ff':n.layer==='L2'?'#ffa657':n.layer==='L3'?'#7ee787':'#f85149';
+                    var computedShape = 'hexagon';
+                    if (n.layer === 'L0') computedShape = 'star';
+                    else if (n.layer === 'L1') computedShape = 'square';
+                    else if (n.layer === 'L2') computedShape = 'dot';
+                    else if (n.layer === 'L4') computedShape = 'triangle';
+
+                    var borderStateColor = '#22c55e';
+                    if (n.defcon_level == 2) borderStateColor = '#e3b341';
+                    else if (n.defcon_level == 3) borderStateColor = '#da3633';
+
+                    var computedBorderWidth = n.is_god_object ? 5.0 : 2.5;
+                    var computedBorderWidthSelected = n.is_god_object ? 7.0 : 4.5;
+
+                    return {
+                        ...n, 
+                        shape: computedShape,
+                        size: n.layer === 'L2' ? 32 : 20,
+                        color: { 
+                            background: baseColor, border: borderStateColor,
+                            highlight: { background: baseColor, border: '#ffffff' }
+                        },
+                        borderWidth: computedBorderWidth,
+                        borderWidthSelected: computedBorderWidthSelected,
+                        font: { color: '#fff', size: 11, face: 'monospace', vadjust: -30 },
+                        opacity: n.opacity !== undefined ? n.opacity : 1.0
+                    };
+                }));
+
+                edges = new vis.DataSet(AtlasData.edges.map(e => ({ 
+                    ...e, arrows: 'to', color: { color: '#444', opacity: 0.35 } 
+                })));
+
+                // 🔥 FISICA COMPACT CON SMORZAMENTO MASSIMO - RISOLVE LE OSCILLAZIONI INFINITE
+                var options = {
+                    physics: { 
+                        solver: 'barnesHut',
+                        barnesHut: { 
+                            gravitationalConstant: -4000, 
+                            centralGravity: 0.12, 
+                            springLength: 105,
+                            springConstant: 0.04,
+                            damping: 0.28
+                        },
+                        stabilization: { 
+                            enabled: true,
+                            iterations: 1600, 
+                            updateInterval: 40
+                        }
+                    }
+                };
+
+                network = new vis.Network(document.getElementById('network'), { nodes, edges }, options);
+
+                // 🔥 ANTI-MOTION LOCK: Congela all'istante la fisica non appena il grafo trova l'equilibrio stabile
+                network.once("stabilized", function() {
+                    network.setOptions({ physics: false });
+                    // Dissolve il pannello di caricamento
+                    var overlay = document.getElementById("loading-overlay");
+                    if (overlay) {
+                        overlay.style.opacity = 0;
+                        setTimeout(function() { overlay.style.display = "none"; }, 400);
+                    }
+                });
+
+                network.on("click", function(p) { 
+                    if (p.nodes.length > 0) handleTagClick(p.nodes[0]);
+                    else resetFocus();
+                });
+
+                setTimeout(function() { network.fit(); }, 250);
+                renderProjectOverview();
+
+            } catch (e) { console.error("Atlas Render Error:", e); }
+        };
+
+        function getText(key) {
+            if (typeof AtlasLocalization !== 'undefined' && AtlasLocalization[key]) {
+                return AtlasLocalization[key];
+            }
+            return key; 
+        }
+
+        function renderProjectOverview() {
+            try {
+                var html = '<div style="padding: 5px 0;">';
+                html += '<div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #30363d; padding-bottom:8px;">';
+                html += '<span style="color:#8b949e;">' + getText('__L_TOTAL_SCRIPTS__') + ':</span><b style="color:#fff; font-size:14px;">' + AtlasData.total_scripts + '</b></div>';
+                
+                var godNodes = nodes.get({ filter: function(n) { return n.is_god_object; } });
+                if (AtlasData.total_god_objects > 0) {
+                    html += '<div class="god-alert" style="margin-bottom:6px; text-align:left; padding:10px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="toggleOverviewList(\'godobjects\')">';
+                    html += '<span>[ALERT] ' + getText('__L_TOTAL_GODS__') + ': ' + AtlasData.total_god_objects + '</span><span style="font-family:monospace; font-weight:bold;">+</span></div>';
+                    html += '<div id="overview-godobjects-list" style="display:none; margin-bottom:12px; padding:4px; background:#0d1117; border:1px solid #f85149; border-radius:4px; max-height:180px; overflow-y:auto;">';
+                    godNodes.forEach(function(n) { html += '<div class="overview-list-item" style="color:#f85149;" onclick="event.stopPropagation(); handleTagClick(\'' + n.id + '\')">' + n.label + '</div>'; });
+                    html += '</div>';
+                } else {
+                    html += '<div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #30363d; padding-bottom:8px;">';
+                    html += '<span style="color:#8b949e;">' + getText('__L_TOTAL_GODS__') + ':</span><b style="color:#7ee787;">0</b></div>';
+                }
+                
+                var todoNodes = nodes.get({ filter: function(n) { return n.todos && n.todos.length > 0; } });
+                if (AtlasData.total_debt > 0) {
+                    html += '<div class="defcon-banner" style="background:rgba(255,171,112,0.1); color:#ffab70; border-color:#ffab70; padding:8px; font-size:11px; margin-bottom:6px; text-align:left; cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="toggleOverviewList(\'todos\')">';
+                    html += '<span><span class="banner-circle" style="background:#ffab70;"></span>' + getText('__L_TOTAL_DEBT__') + ': ' + AtlasData.total_debt + '</span><span style="font-family:monospace; font-weight:bold;">+</span></div>';
+                    html += '<div id="overview-todos-list" style="display:none; margin-bottom:12px; padding:4px; background:#0d1117; border:1px solid #ffab70; border-radius:4px; max-height:180px; overflow-y:auto;">';
+                    todoNodes.forEach(function(n) { html += '<div class="overview-list-item" style="color:#ffab70;" onclick="event.stopPropagation(); handleTagClick(\'' + n.id + '\')">' + n.label + ' (' + n.todos.length + ')</div>'; });
+                    html += '</div>';
+                } else {
+                    html += '<div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #30363d; padding-bottom:8px;">';
+                    html += '<span style="color:#8b949e;">' + getText('__L_TOTAL_DEBT__') + ':</span><b style="color:#7ee787;">0</b></div>';
+                }
+                
+                html += '<span class="section-title">' + getText('__L_STABILITY_DIST__') + '</span>';
+                html += '<div class="defcon-banner defcon-1" style="padding:8px; font-size:11px; margin-bottom:6px; text-align:left;"><span class="banner-circle" style="background:#7ee787;"></span>' + getText('__L_DEFCON_1__') + ': ' + AtlasData.defcon1 + '</div>';
+                
+                var fragileNodes = nodes.get({ filter: function(n) { return n.defcon_level == 2; } });
+                var fragileCursor = fragileNodes.length > 0 ? 'cursor:pointer;' : '';
+                html += '<div class="defcon-banner defcon-2" style="padding:8px; font-size:11px; margin-bottom:6px; text-align:left; ' + fragileCursor + '" onclick="toggleOverviewList(\'defcon2\')">';
+                html += '<span class="banner-circle" style="background:#e3b341;"></span>' + getText('__L_DEFCON_2__') + ': ' + AtlasData.defcon2 + '<span style="margin-left:auto; font-family:monospace; font-weight:bold;">' + (fragileNodes.length > 0 ? '+' : '') + '</span></div>';
+                html += '<div id="overview-defcon2-list" style="display:none; margin-bottom:6px; padding:4px; background:#0d1117; border:1px solid #30363d; border-radius:4px; max-height:180px; overflow-y:auto;">';
+                fragileNodes.forEach(function(n) { html += '<div class="overview-list-item" style="color:#e3b341;" onclick="event.stopPropagation(); handleTagClick(\'' + n.id + '\')">' + n.label + '</div>'; });
+                html += '</div>';
+                
+                var criticalNodes = nodes.get({ filter: function(n) { return n.defcon_level == 3; } });
+                var criticalCursor = criticalNodes.length > 0 ? 'cursor:pointer;' : '';
+                html += '<div class="defcon-banner defcon-3" style="padding:8px; font-size:11px; margin-bottom:12px; text-align:left; ' + criticalCursor + '" onclick="toggleOverviewList(\'defcon3\')">';
+                html += '<span class="banner-circle" style="background:#f85149;"></span>' + getText('__L_DEFCON_3__') + ': ' + AtlasData.defcon3 + '<span style="margin-left:auto; font-family:monospace; font-weight:bold;">' + (criticalNodes.length > 0 ? '+' : '') + '</span></div>';
+                html += '<div id="overview-defcon3-list" style="display:none; margin-bottom:12px; padding:4px; background:#0d1117; border:1px solid #30363d; border-radius:4px; max-height:180px; overflow-y:auto;">';
+                criticalNodes.forEach(function(n) { html += '<div class="overview-list-item" style="color:#f85149;" onclick="event.stopPropagation(); handleTagClick(\'' + n.id + '\')">' + n.label + '</div>'; });
+                html += '</div>';
+                html += '</div>';
+                
+                document.getElementById('p-content').innerHTML = html;
+                document.getElementById('p-title').innerHTML = getText('__L_OVERVIEW_TITLE__');
+            } catch(e) {
+                document.getElementById('p-content').innerHTML = '<p style="color:#8b949e; text-align: center; margin-top: 100px;">' + getText('__L_SELECT_NODE__') + '</p>';
+            }
+        }
+
+        function toggleOverviewList(type) {
+            var el = document.getElementById('overview-' + type + '-list');
+            if (!el) return;
+            var indicator = el.previousElementSibling.querySelector('span:last-child');
+            if (el.style.display === "block") { el.style.display = "none"; if (indicator) indicator.innerText = "+"; } 
+            else { el.style.display = "block"; if (indicator) indicator.innerText = "-"; }
+        }
+
+        function generateMethodMap(code) {
+            if (!code) return "";
+            var output = ""; var i = 0;
+            while (i < code.length) {
+                if (code[i] === ')') {
+                    output += ')';
+                    var lookAhead = i + 1; var spaces = "";
+                    while (lookAhead < code.length && (code[lookAhead] === ' ' || code[lookAhead] === '\t' || code[lookAhead] === '\r' || code[lookAhead] === '\n')) {
+                        spaces += code[lookAhead]; lookAhead++;
+                    }
+                    if (lookAhead < code.length && lookAhead + 1 < code.length && code[lookAhead] === '{') {
+                        output += spaces + "{ /* [ECO-SCAN] Implementazione rimossa da Atlas Codex */ }";
+                        var braceCount = 1; lookAhead++;
+                        while (lookAhead < code.length && braceCount > 0) {
+                            if (code[lookAhead] === '{') braceCount++;
+                            else if (code[lookAhead] === '}') braceCount--;
+                            lookAhead++;
+                        }
+                        i = lookAhead - 1;
+                    }
+                } else { output += code[i]; }
+                i++;
+            }
+            return output;
+        }
+
+        function toggleAccordion(headerElement) {
+            var content = headerElement.nextElementSibling;
+            var indicator = headerElement.querySelector('span:last-child');
+            if (content.style.display === "block") { content.style.display = "none"; indicator.innerText = "+"; headerElement.style.color = "#e6edf3"; } 
+            else { content.style.display = "block"; indicator.innerText = "-"; headerElement.style.color = "#7ee787"; }
+        }
+
+        function setContextMode(mode) {
+            currentContextMode = mode;
+            document.getElementById('mode-map-btn').classList.toggle('active', mode === 'map');
+            document.getElementById('mode-target-btn').classList.toggle('active', mode === 'target');
+            document.getElementById('mode-full-btn').classList.toggle('active', mode === 'full');
+            if (currentSelectedId) updateAiRiskIndicator(currentSelectedId);
+        }
+
+        function buildExportPayload(id, mode) {
+            var targetNode = nodes.get(id);
+            if (!targetNode) return "";
+
+            var payload = "// ==========================================\n // ATLAS CODEX - AI CONTEXT EXPORT\n";
+            payload += "// TARGET SCRIPT: " + targetNode.id + "\n// CONTEXT MODE: " + mode.toUpperCase() + "\n // ==========================================\n\n";
+            
+            var targetCode = (mode === 'map' && targetNode.slim_code) ? unesc(targetNode.slim_code) : unesc(targetNode.code);
+            if (mode === 'map' && !targetNode.slim_code) targetCode = generateMethodMap(targetCode);
+            
+            payload += "// ---> SORGENTE TARGET COMPLETO: " + targetNode.id + " <---\n" + targetCode + "\n\n";
+
+            var superiors = edges.get().filter(e => e.to === id).map(e => e.from);
+            var uniqueSuperiors = [...new Set(superiors)];
+            if (uniqueSuperiors.length > 0) {
+                payload += "// ==========================================\n// SUPERIORI (IMPACT ANALYSIS)\n // ==========================================\n\n";
+                uniqueSuperiors.forEach(function(supId) {
+                    var sNode = nodes.get(supId);
+                    if (sNode && sNode.code) {
+                        var finalCode = (mode === 'full') ? unesc(sNode.code) : ((mode === 'map' && sNode.slim_code) ? unesc(sNode.slim_code) : generateMethodMap(unesc(sNode.code)));
+                        payload += "// --- FILE: " + sNode.id + " ---\n" + finalCode + "\n\n";
+                    }
+                });
+            }
+
+            if (targetNode.dependencies && targetNode.dependencies.trim() !== "" && targetNode.dependencies.trim() !== "Nessuna") {
+                var depsArray = targetNode.dependencies.split(',').map(d => d.trim());
+                var validDeps = depsArray.filter(d => nodes.get(d) !== null);
+                
+                if (validDeps.length > 0) {
+                    payload += "// ==========================================\n// DIPENDENZE (Script letti/utilizzati)\n // ==========================================\n\n";
+                    validDeps.forEach(function(depId) {
+                        var dNode = nodes.get(depId);
+                        if (dNode && dNode.code) {
+                            var finalCode = (mode === 'full') ? unesc(dNode.code) : ((mode === 'map' && dNode.slim_code) ? unesc(dNode.slim_code) : generateMethodMap(unesc(dNode.code)));
+                            payload += "// --- FILE: " + dNode.id + " ---\n" + finalCode + "\n\n";
+                        }
+                    });
+                }
+            }
+            return payload;
+        }
+
+        function updateAiRiskIndicator(id) {
+            var payloadText = buildExportPayload(id, currentContextMode);
+            var charCount = payloadText.length;
+            var estimatedTokens = Math.ceil(charCount / 4); 
+
+            var riskIndicator = document.getElementById('ai-risk-indicator');
+            riskIndicator.className = 'risk-text';
+
+            var riskLevelText = "";
+            if (estimatedTokens < 6000) { 
+                riskLevelText = getText('__L_AI_RISK_LOW__'); 
+                riskIndicator.classList.add('risk-low'); 
+            } else if (estimatedTokens < 20000) { 
+                riskLevelText = getText('__L_AI_RISK_MED__'); 
+                riskIndicator.classList.add('risk-med'); 
+            } else { 
+                riskLevelText = getText('__L_AI_RISK_HIGH__'); 
+                riskIndicator.classList.add('risk-high'); 
+            }
+
+            var formattedTokens = estimatedTokens.toLocaleString('it-IT');
+            riskIndicator.innerHTML = getText('__L_TOKENS__') + ' <b>' + formattedTokens + '</b> | ' + riskLevelText;
+        }
+
+        function copyContextForLLM() {
+            if (!currentSelectedId) return;
+            var payload = buildExportPayload(currentSelectedId, currentContextMode);
+            
+            navigator.clipboard.writeText(payload).then(function() {
+                var btn = document.getElementById('btn-copy-llm');
+                var originalText = btn.innerHTML;
+                btn.innerHTML = getText('__L_COPIED__'); btn.classList.add('copied');
+                setTimeout(function() { btn.innerHTML = originalText; btn.classList.remove('copied'); }, 2500);
+            }).catch(function(err) { console.error('Errore copia: ', err); });
+        }
+
+        function toggleHelp() {
+            var overlay = document.getElementById('help-overlay');
+            overlay.style.display = (overlay.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function focusOnNode(id) {
+            var connectedNodes = network.getConnectedNodes(id);
+            var focusList = [id, ...connectedNodes];
+            nodes.update(nodes.get().map(n => ({ id: n.id, hidden: !focusList.includes(n.id) })));
+        }
+
+        function resetFocus() {
+            currentSelectedId = null;
+            if(document.getElementById('btn-copy-llm')) document.getElementById('btn-copy-llm').style.display = 'none';
+
+            var activeLayers = [];
+            document.querySelectorAll('#layer-filters .layer-btn.active').forEach(function(btn) {
+                var match = btn.getAttribute('onclick').match(/'(.*?)'/);
+                if (match) activeLayers.push(match[1]);
+            });
+
+            nodes.update(nodes.get().map(n => ({ id: n.id, hidden: !activeLayers.includes(n.layer) })));
+            renderProjectOverview();
+            document.getElementById('search-input').value = ""; 
+            network.unselectAll();
+            setTimeout(function() { network.fit(); }, 50);
+        }
+
+        function onSearch() {
+            var t = document.getElementById('search-input').value.toLowerCase();
+            if (!t) { resetFocus(); return; }
+
+            var activeLayers = [];
+            document.querySelectorAll('#layer-filters .layer-btn.active').forEach(function(btn) {
+                var m = btn.getAttribute('onclick').match(/'(.*?)'/);
+                if (m) activeLayers.push(m[1]);
+            });
+
+            nodes.update(nodes.get().map(n => ({ 
+                id: n.id, hidden: !(n.label.toLowerCase().includes(t) && activeLayers.includes(n.layer)) 
+            })));
+        }
+
+        function toggleLayer(l) {
+            var btn = document.querySelector('.layer-btn[onclick="toggleLayer(\''+l+'\')"]');
+            btn.classList.toggle('active');
+            var isActive = btn.classList.contains('active');
+            var t = document.getElementById('search-input').value.toLowerCase();
+
+            nodes.update(nodes.get().filter(n => n.layer === l).map(n => ({ 
+                id: n.id, hidden: !(isActive && (t === "" || n.label.toLowerCase().includes(t)))
+            })));
+            setTimeout(function() { network.fit(); }, 100);
+        }
+
+        function handleTagClick(id) {
+            if (nodes.get(id) !== null) {
+                currentSelectedId = id;
+                network.selectNodes([id]); 
+                showDetail(id);
+                focusOnNode(id);
+            }
+        }
+
+        function showDetail(id) {
+            var n = nodes.get(id);
+            if (!n) return;
+
+            if(document.getElementById('btn-copy-llm')) document.getElementById('btn-copy-llm').style.display = 'block';
+
+            var superiors = edges.get().filter(e => e.to === id).map(e => e.from);
+            var html = "";
+
+            if (n.defcon_level === 1) html += '<div class="defcon-banner defcon-1"><span class="banner-circle" style="background:#7ee787;"></span>' + getText('__L_DEFCON_1__') + '</div>';
+            else if (n.defcon_level === 2) html += '<div class="defcon-banner defcon-2"><span class="banner-circle" style="background:#e3b341;"></span>' + getText('__L_DEFCON_2__') + '</div>';
+            else if (n.defcon_level === 3) html += '<div class="defcon-banner defcon-3"><span class="banner-circle" style="background:#f85149;"></span>' + getText('__L_DEFCON_3__') + '</div>';
+
+            if (n.is_god_object) html += '<div class="god-alert">[ALERT] GOD OBJECT DETECTED (' + n.dep_count + ' dipendenze)</div>';
+            
+            html += '<div class="context-toggle-panel">';
+            html += '<div style="font-size:11px; color:#8b949e; font-weight:bold;">' + getText('__L_CONTEXT_MODE__') + '</div>';
+            html += '<div class="toggle-btn-group">';
+            html += '<div id="mode-map-btn" class="toggle-opt ' + (currentContextMode === 'map' ? 'active' : '') + '" onclick="setContextMode(\'map\')">' + getText('__L_MODE_MAP__') + '</div>';
+            html += '<div id="mode-target-btn" class="toggle-opt ' + (currentContextMode === 'target' ? 'active' : '') + '" onclick="setContextMode(\'target\')">' + getText('__L_MODE_TARGET__') + '</div>';
+            html += '<div id="mode-full-btn" class="toggle-opt ' + (currentContextMode === 'full' ? 'active' : '') + '" onclick="setContextMode(\'full\')">' + getText('__L_MODE_FULL__') + '</div>';
+            html += '</div>';
+            html += '<div id="ai-risk-indicator" class="risk-text"></div>';
+            html += '</div>';
+
+            var finalDesc = n.description === "__L_NO_DESCRIPTION__" ? getText('__L_NO_DESCRIPTION__') : unesc(n.description);
+            html += '<span class="section-title">' + getText('__L_STRATEGIC__') + '</span><div class="ai-summary">' + finalDesc + '</div>';
+            
+            html += '<span class="section-title" style="color:#a371f7;">[ALERTA] ' + getText('__L_IMPACT__') + '</span><div style="background:rgba(163,113,247,0.05); border:1px dashed #a371f7; padding:10px; border-radius:6px; margin-bottom: 10px;">';
+            if (superiors.length > 0) {
+                var supHtml = [...new Set(superiors)].map(s => {
+                    return nodes.get(s) !== null ? '<span class="tag superior clickable" onclick="handleTagClick(\'' + s + '\')">' + s + '</span>' : '<span class="tag superior">' + s + '</span>'; 
+                }).join('');
+                html += '<div class="tag-container" style="margin-bottom:0;">' + supHtml + '</div>';
+            } else { html += '<span style="font-size:11px; color:#444;">' + getText('__L_NO_SUPERIORS__') + '</span>'; }
+            html += '</div>';
+
+            html += '<span class="section-title">[SCENE] ' + getText('__L_SCENE__') + '</span>';
+            if (n.scene_density_count > 30) {
+                html += '<div class="density-alert">[WARNING] ' + getText('__L_SCENE_DENSITY__') + ': ' + n.scene_density_count + ' ISTANZE!</div><br>';
+            } else if (n.scene_density_count > 0) {
+                html += '<div style="font-size:11px; margin-bottom:8px; color:#8b949e;">' + getText('__L_INSTANCES_FOUND__') + ' <b style="color:#fff">' + n.scene_density_count + '</b></div>';
+            }
+
+            html += '<div class="tag-container">';
+            if (n.scene_objects && n.scene_objects.length > 0) {
+                n.scene_objects.forEach(obj => {
+                    var txt = obj === "__L_EDITOR_SCAN__" ? getText('__L_EDITOR_SCAN__') : obj;
+                    html += '<span class="tag unity">' + txt + '</span>';
+                });
+            } else { html += '<span style="font-size:11px; color:#444;">' + getText('__L_NONE__') + '</span>'; }
+            html += '</div>';
+
+            if (n.expensive_methods && n.expensive_methods.length > 0) {
+                html += '<span class="section-title" style="color:#ffa657;">[PERFORMANCE] ' + getText('__L_EXPENSIVE_METHODS__') + '</span><div class="tag-container">';
+                n.expensive_methods.forEach(function(em) { html += '<span class="tag expensive">' + unesc(em) + '</span>'; });
+                html += '</div>';
+            }
+
+            html += '<span class="section-title">[LINK] ' + getText('__L_DEPS__') + '</span><div class="tag-container">';
+            if (n.dependencies && n.dependencies.trim() !== "" && n.dependencies.trim() !== "Nessuna") {
+                var depHtml = n.dependencies.split(',').map(d => {
+                    var cleanName = d.trim();
+                    return nodes.get(cleanName) !== null ? '<span class="tag dep clickable" onclick="handleTagClick(\'' + cleanName + '\')">' + cleanName + '</span>' : '<span class="tag dep">' + cleanName + '</span>'; 
+                }).join('');
+                html += depHtml;
+            } else { html += '<span style="font-size:11px; color:#444;">' + getText('__L_NONE__') + '</span>'; }
+            html += '</div>';
+
+            if (n.todos && n.todos.length > 0) {
+                html += '<span class="section-title">' + getText('__L_TECH_DEBT__') + '</span>';
+                n.todos.forEach(function(t) { html += '<div style="font-size:11px; color:#ffab70; margin-bottom:4px; padding-left:5px;">• ' + unesc(t) + '</div>'; });
+            }
+
+            html += '<span class="section-title">' + getText('__L_SOURCE__') + '</span><pre><code>' + unesc(n.code) + '</code></pre>';
+
+            document.getElementById('p-title').innerHTML = n.label;
+            document.getElementById('p-content').innerHTML = html;
+            
+            updateAiRiskIndicator(id);
+        }
+
+        function unesc(s) { 
+            if (!s) return "";
+            var doc1 = new DOMParser().parseFromString(s, "text/html");
+            var firstPass = doc1.documentElement.textContent;
+            var doc2 = new DOMParser().parseFromString(firstPass, "text/html");
+            return doc2.documentElement.textContent;
+        }
+    </script>
+</body>
+</html>

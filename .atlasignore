@@ -1,0 +1,19 @@
+# Cache e persistenza di Atlas Codex
+memory/
+atlas_gui_config.json
+atlas_engine_errors.log
+
+# Ecosistema di output visivo
+atlascodex_viewer/
+atlas_architecture_codex.html
+atlas_architecture_codex_llm_payload.json
+
+# Cache di sistema comuni
+.git/
+node_modules/
+__pycache__/
+.pytest_cache/
+bin/
+obj/
+library/
+temp/
