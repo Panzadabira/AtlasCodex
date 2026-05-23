@@ -2,6 +2,9 @@
 ### *Universal Polyglot Architecture Mapping & Static Analysis Engine*
 **Atlas Codex** is a standalone, polyglot static analysis suite designed for **zero-latency architectural mapping** of complex codebases (Unity/C#, Python, Java, C++, HTML, UXML, USS, CSS, JS). It transforms raw directory structures into an interactive **cosmological relational graph** (the *Planetarium*), while surgically optimizing context payloads for Local and Cloud LLMs through our proprietary **Eco-Scan protocol**, slashing token waste by up to **95%**.
 
+⚠️ Release Status: The native Unity Editor integration is currently pending approval by the Unity Asset Store team. Stay tuned for the official launch! You can star this repository to get notified as soon as it goes live.
+
+
 <p align="center">
   <img src="demo.gif" alt="Atlas Codex Demo" width="700">
 </p>
@@ -61,10 +64,13 @@ The *Planetarium* map uses custom orbital geometries and distinct colors to repr
    ```
 ## The Panza Labs Ecosystem
 This repository serves as the core open-source engine of **Atlas Codex**. If you are developing complex gamedev pipelines and want a frictionless, unified workflow:
+
 **Atlas Codex for Unity Editor**
 *Available for **42.00 CHF** — the ultimate answer to Life, the Universe, and your spaghetti code architecture.*
 The Premium Unity Asset integrates the *Planetarium* graph directly inside Unity as a native Editor Window (using UI Toolkit), featuring automatic hot-reloads on script saves, custom editor layouts, and instant one-click pinging of files in the project Inspector.
+
 The core engine remains free and open-source. If you find Atlas Codex valuable, consider supporting its long-term development by purchasing the Premium Unity Editor Integration
+
 ### Base File Architecture
  * main.py: Hardened entrypoint.
  * Atlas_UI.py: Interactive hub (Tkinter) with GitHub Dark aesthetics.
@@ -72,5 +78,7 @@ The core engine remains free and open-source. If you find Atlas Codex valuable, 
  * Atlas_Analyzer.py: Extensible static analysis hub (*Strategy Pattern*).
  * AtlasTemplate.html: High-performance canvas view (Glassmorphism & Vis.js).
 * processors/: The extensible heart — add new language processors here!
+
+
 ⚖️ **License:** Distributed under the MIT License.
 Built with passion for developers by **Panza Labs**.
