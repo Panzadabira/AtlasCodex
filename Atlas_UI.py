@@ -83,7 +83,7 @@ class AtlasAppUI:
     """
     def __init__(self, root):
         self.root = root
-        self.root.title("🛰️ Atlas Codex - Project Configuration Hub")
+        self.root.title("PanzaScope - Project Configuration Hub")
         
         try:
             self.root.state('zoomed')

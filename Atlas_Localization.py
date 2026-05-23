@@ -11,7 +11,7 @@ LOCALIZATION_MATRIX = {
     "EN": {
         
         # --- DESKTOP LAUNCHER TOKENS (UI) ---
-        "UI_HEADER": "🛰️ ATLAS CODEX ENGINE - SETUP CENTER",
+        "UI_HEADER": "PANZASCOPE CODEX ENGINE - SETUP CENTER",
         "UI_SRC_FRAME": " 📂 PROJECT SOURCE & ARCHITECTURE CONTEXT ",
         "UI_SRC_TYPE": "Source Type:", "UI_PROJ_TYPE": "Project Type:",
         "UI_PATH_FOLDER": "Project Folder Path:", "UI_PATH_GIT": "Git Repository URL:",
@@ -34,7 +34,7 @@ LOCALIZATION_MATRIX = {
     "IT": {
       
         # --- DESKTOP LAUNCHER TOKENS (UI) ---
-        "UI_HEADER": "🛰️ ATLAS CODEX ENGINE - SETUP CENTER",
+        "UI_HEADER": "PANZASCOPE CODEX ENGINE - SETUP CENTER",
         "UI_SRC_FRAME": " 📂 ORIGINE PROGETTO & CONTESTO ARCHITETTURALE ",
         "UI_SRC_TYPE": "Tipo di Origine:", "UI_PROJ_TYPE": "Tipo di Progetto:",
         "UI_PATH_FOLDER": "Cartella del Progetto:", "UI_PATH_GIT": "URL Repository Git:",
@@ -58,7 +58,7 @@ LOCALIZATION_MATRIX = {
     "DE": {
        
         # --- DESKTOP LAUNCHER TOKENS (UI) ---
-        "UI_HEADER": "🛰️ ATLAS CODEX ENGINE - SETUP CENTER",
+        "UI_HEADER": "PANZASCOPE CODEX ENGINE - SETUP CENTER",
         "UI_SRC_FRAME": " 📂 PROJEKTQUELLE UND ARCHITEKTURKONTEXT ",
         "UI_SRC_TYPE": "Quellentyp:", "UI_PROJ_TYPE": "Projekttyp:",
         "UI_PATH_FOLDER": "Projektordner-Pfad:", "UI_PATH_GIT": "Git-Repository-URL:",
@@ -81,7 +81,7 @@ LOCALIZATION_MATRIX = {
     "FR": {
                
         # --- DESKTOP LAUNCHER TOKENS (UI) ---
-        "UI_HEADER": "🛰️ ATLAS CODEX ENGINE - SETUP CENTER",
+        "UI_HEADER": "PANZASCOPE CODEX ENGINE - SETUP CENTER",
         "UI_SRC_FRAME": " 📂 SOURCE DU PROJET & CONTEXTE D'ARCHITECTURE ",
         "UI_SRC_TYPE": "Type de Source :", "UI_PROJ_TYPE": "Type de Projet :",
         "UI_PATH_FOLDER": "Chemin du Dossier Projet :", "UI_PATH_GIT": "URL du Dépôt Git :",
@@ -104,7 +104,7 @@ LOCALIZATION_MATRIX = {
     "ES": {
      
         # --- DESKTOP LAUNCHER TOKENS (UI) ---
-        "UI_HEADER": "🛰️ ATLAS CODEX ENGINE - SETUP CENTER",
+        "UI_HEADER": "PANZASCOPE CODEX ENGINE - SETUP CENTER",
         "UI_SRC_FRAME": " 📂 FUENTE DEL PROYECTO Y CONTEXTO DE ARQUITECTURA ",
         "UI_SRC_TYPE": "Tipo de Origen:", "UI_PROJ_TYPE": "Tipo de Proyecto:",
         "UI_PATH_FOLDER": "Ruta de la Carpeta del Proyecto:", "UI_PATH_GIT": "URL del Repositorio Git:",
@@ -127,7 +127,7 @@ LOCALIZATION_MATRIX = {
     "RU": {
        
         # --- DESKTOP LAUNCHER TOKENS (UI) ---
-        "UI_HEADER": "🛰️ ATLAS CODEX ENGINE - SETUP CENTER",
+        "UI_HEADER": "PANZASCOPE CODEX ENGINE - SETUP CENTER",
         "UI_SRC_FRAME": " 📂 ИСХОДНЫЙ КОД ПРОЕКТА И АРХИТЕКТУРНЫЙ КОНТЕКСТ ",
         "UI_SRC_TYPE": "Тип Источника:", "UI_PROJ_TYPE": "Тип Проекта:",
         "UI_PATH_FOLDER": "Путь к Папке Проекта:", "UI_PATH_GIT": "URL Git-Репозитория:",
@@ -150,7 +150,7 @@ LOCALIZATION_MATRIX = {
     "ZH": {
        
         # --- DESKTOP LAUNCHER TOKENS (UI) ---
-        "UI_HEADER": "🛰️ ATLAS CODEX ENGINE - SETUP CENTER",
+        "UI_HEADER": "PANZASCOPE CODEX ENGINE - SETUP CENTER",
         "UI_SRC_FRAME": " 📂 项目源码与系统 live 架构上下文 ",
         "UI_SRC_TYPE": "源码类型:", "UI_PROJ_TYPE": "项目类型:",
         "UI_PATH_FOLDER": "项目本地文件夹 路径:", "UI_PATH_GIT": "Git 仓库托管 URL 地址:",
