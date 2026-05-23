@@ -1,6 +1,7 @@
 # --- Atlas Codex: Dati Sensibili e Cache ---
 atlas_gui_config.json
 .atlas_codex_cache.json
+AtlasCodex_Viewer/atlas_data.js
 Memory/.atlas_codex_cache.json
 Memory/*.json
 AtlasCodex_Viewer/atlas_data.js

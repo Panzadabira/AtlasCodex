@@ -1,6 +1,8 @@
-# Atlas Codex (v1.0.0)
+﻿# Atlas Codex (v1.0.0)
 ### *Universal Polyglot Architecture Mapping & Static Analysis Engine*
 **Atlas Codex** is a standalone, polyglot static analysis suite designed for **zero-latency architectural mapping** of complex codebases (Unity/C#, Python, Java, C++, HTML, UXML, USS, CSS, JS). It transforms raw directory structures into an interactive **cosmological relational graph** (the *Planetarium*), while surgically optimizing context payloads for Local and Cloud LLMs through our proprietary **Eco-Scan protocol**, slashing token waste by up to **95%**.
+### Open-Source Collaboration
+This project is a labor of love and a testament to the power of open-source collaboration. We welcome contributions from developers, researchers, and enthusiasts across all levels of expertise. Whether you have a bug fix, a new feature, or just want to share your thoughts, check the Issues tab for open tasks or open a new one to propose a feature.
 ## Core Features
  * **Dual-Stream Architecture:** Decouples human visual telemetry from machine analysis. Generates a gorgeous, hardware-accelerated interactive HTML report (*Planetarium*) and a highly compressed, syntax-stripped JSON blueprint (_LLM_Payload.json) for AI context injection.
  * **Eco-Scan Protocol (Blueprint Extraction):** Prevents context window saturation. Strips logic method bodies and extracts structural DOM hierarchies (IDs, Classes, Tags), preserving the system's behavioral signature at a fraction of the token cost.
@@ -57,11 +59,13 @@ This repository serves as the core open-source engine of **Atlas Codex**. If you
 **Atlas Codex for Unity Editor**
 *Available for **42.00 CHF** — the ultimate answer to Life, the Universe, and your spaghetti code architecture.*
 The Premium Unity Asset integrates the *Planetarium* graph directly inside Unity as a native Editor Window (using UI Toolkit), featuring automatic hot-reloads on script saves, custom editor layouts, and instant one-click pinging of files in the project Inspector.
+The core engine remains free and open-source. If you find Atlas Codex valuable, consider supporting its long-term development by purchasing the Premium Unity Editor Integration
 ### Base File Architecture
  * main.py: Hardened entrypoint.
  * Atlas_UI.py: Interactive hub (Tkinter) with GitHub Dark aesthetics.
  * Atlas_Generator.py: Pipeline coordinator.
  * Atlas_Analyzer.py: Extensible static analysis hub (*Strategy Pattern*).
  * AtlasTemplate.html: High-performance canvas view (Glassmorphism & Vis.js).
+* processors/: The extensible heart — add new language processors here!
 ⚖️ **License:** Distributed under the MIT License.
 Built with passion for developers by **Panza Labs**.
