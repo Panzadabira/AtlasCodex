@@ -6,23 +6,31 @@ import fnmatch
 
 class AtlasScanner:
     """
-    AtlasScanner v16.6 - Modulo Operativo Stadio 1 (Ignore-Aware & Frontend-Protected)
-    Mappa il filesystem escludendo i pattern dichiarati in .atlasignore e blinda
-    l'analisi ignorando l'ecosistema di rendering per evitare collisioni ID a frontend.
+    AtlasScanner v16.8 - Modulo Operativo Stadio 1 (Ignore-Aware & UI-Override)
+    Mappa il filesystem escludendo i pattern dichiarati in .atlasignore, blinda
+    l'analisi ignorando l'ecosistema di rendering, e forza i file visivi a L4.
     """
     def __init__(self, analyzer, source_code_folder, project_type):
         self.analyzer = analyzer
         self.source_code_folder = source_code_folder
         self.project_type = project_type
         self.scene_ref_db = {}
-        self.supported_extensions = tuple(self.analyzer.processors.keys())
+        
+        # Include esplicitamente estensioni web/UI per consentire il rilevamento 
+        # anche se non hanno un processore dedicato (sfruttando il .generic)
+        base_extensions = list(self.analyzer.processors.keys())
+        for ext in [".html", ".uxml", ".uss", ".css"]:
+            if ext not in base_extensions:
+                base_extensions.append(ext)
+        self.supported_extensions = tuple(base_extensions)
+        
         self.ignore_patterns = self._load_atlasignore()
 
     def _load_atlasignore(self):
         """Carica i pattern da un file .atlasignore se presente, altrimenti usa regole di fallback."""
         ignore_path = os.path.join(self.source_code_folder, ".atlasignore")
         patterns = [
-            "*.git*", "*node_modules*", "*bin*", "*obj*", "*library*", "*temp*",
+            "*.git*", "*node_modules*", "*bin*", "*obj*", "*library*",
             "*memory*", "*atlascodex_viewer*", "*_llm_payload.json*", "*.log"
         ]
         
@@ -153,11 +161,17 @@ class AtlasScanner:
                 with open(full_p, 'r', encoding='utf-8', errors='ignore') as f: content = f.read()
             except: continue
 
-            ext = os.path.splitext(file)[1]
+            ext = os.path.splitext(file)[1].lower()
             processor = self.analyzer.get_processor(ext)
             
             deps = processor.extract_dependencies(content, class_map, os.path.splitext(file)[0])
             layer = processor.identify_layer(file, rel_p, content)
+            
+            # ---------------------------------------------------------
+            # OVERRIDE FORZATO: Assegna sempre L4 ai formati UI/Visivi
+            # ---------------------------------------------------------
+            if ext in [".html", ".uxml", ".uss", ".css"]:
+                layer = "L4"
             
             raw_nodes.append({
                 "id": file,

@@ -43,7 +43,6 @@ class AtlasAnalyzer:
 
     def get_processor(self, ext):
         """Restituisce il processore specifico, o usa il generic come fallback."""
-        # Se .generic non è registrato per qualche motivo, istanzia la base dinamicamente.
         if '.generic' not in self.processors:
             from processors.base import BaseLanguageProcessor
             return self.processors.get(ext.lower(), BaseLanguageProcessor())
@@ -67,11 +66,6 @@ class AtlasAnalyzer:
     def _get_file_hash(self, content): 
         return hashlib.md5(content.encode('utf-8')).hexdigest()
 
-    # I metodi compute_defcon_matrix e extract_todos sono spostati qui
-    # per praticità operativa dello stadio 2, ma potrebbero teoricamente
-    # stare in processors.base. Li manteniamo qui per non alterare le dipendenze
-    # già create nello scanner/analyzer.
-
     def compute_defcon_matrix(self, dependency_count, scene_instances, has_heavy_methods):
         score = 1
         if dependency_count >= 7 or scene_instances > 10: score = 3
@@ -81,7 +75,6 @@ class AtlasAnalyzer:
     def extract_todos(self, code, ext):
         todos = []
         if not code: return todos
-        # Pattern centralizzato, ma che distingue per estensione per evitare falsi positivi in CSS/HTML
         ext_lower = ext.lower()
         if ext_lower in [".css", ".uss", ".html", ".uxml"]:
             pattern = r'/\*\s*(TODO|FIXME|HACK):?\s*(.*?)\s*\*/'
@@ -89,7 +82,6 @@ class AtlasAnalyzer:
             pattern = r'//\s*(TODO|FIXME|HACK):?\s*(.*)|#\s*(TODO|FIXME|HACK):?\s*(.*)'
 
         for match in re.finditer(pattern, code, re.IGNORECASE):
-            # Gestione sicura dei gruppi matchati (evita NoneType errors)
             groups = [g for g in match.groups() if g is not None]
             if len(groups) >= 2:
                todos.append(f"[{groups[0].upper()}] {groups[1].strip()}")
@@ -105,10 +97,8 @@ class AtlasAnalyzer:
         processor = self.get_processor(ext)
         
         if "none" in self.provider_config["provider"].lower():
-            # Ora deleghiamo DIRETTAMENTE al processore per ottenere il blueprint tecnico
             summary = processor.extract_pure_blueprint(code)
         else:
-            # Qui andrà la logica LLM futura
             summary = processor.extract_pure_blueprint(code) 
 
         self.cache[file_name] = {"hash": code_hash, "summary": summary}
