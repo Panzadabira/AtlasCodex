@@ -9,7 +9,7 @@
 </p>
 
 ### Open-Source Collaboration
-This project is a labor of love and a testament to the power of open-source collaboration. We welcome contributions from developers, researchers, and enthusiasts across all levels of expertise. Whether you have a bug fix, a new feature, or just want to share your thoughts, check the Issues tab for open tasks or open a new one to propose a feature.
+This project is a labor of love and a testament to the power of open-source collaboration. I welcome contributions from developers, researchers, and enthusiasts across all levels of expertise. Whether you have a bug fix, a new feature, or just want to share your thoughts, check the Issues tab for open tasks or open a new one to propose a feature.
 
 ---
 
