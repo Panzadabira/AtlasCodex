@@ -51,25 +51,33 @@ The *Planetarium* map uses custom orbital geometries and distinct colors to repr
 * **requests** library
 * **Ollama** (Highly recommended for local offline AI assistance)
 
-### Installation & Run
+## Installation & Run
 
-1. **Clone the repository:**
+**Clone the repository**
+
 '''bash
-   git clone [https://github.com/Panzadabira/PanzaScope.git](https://github.com/Panzadabira/PanzaScope.git)
-   cd PanzaScope
-Install dependencies:
+git clone https://github.com/Panzadabira/PanzaScope.git
+cd PanzaScope
+'''
 
-'''Bash
-   pip install -r requirements.txt
-Launch the model (Optional):
+**Install dependencies**
 
-'''Bash
-   ollama pull qwen2.5-coder:7b
-   ollama serve
-Run:
+'''bash
+pip install -r requirements.txt
+'''
 
-'''Bash
-   python main.py
+**Launch the model (Optional for local AI analysis)**
+
+'''bash
+ollama pull qwen2.5-coder:7b
+ollama serve
+'''
+
+**Run the tool**
+
+'''bash
+python main.py
+'''
 
    ---
 
