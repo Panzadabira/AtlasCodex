@@ -59,16 +59,16 @@ The *Planetarium* map uses custom orbital geometries and distinct colors to repr
    cd PanzaScope
 Install dependencies:
 
-Bash
+'''Bash
    pip install -r requirements.txt
 Launch the model (Optional):
 
-Bash
+'''Bash
    ollama pull qwen2.5-coder:7b
    ollama serve
 Run:
 
-Bash
+'''Bash
    python main.py
 
    ---
