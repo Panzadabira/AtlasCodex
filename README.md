@@ -1,7 +1,7 @@
 ﻿# PanzaScope (v1.0.0)
 ### *Universal Polyglot Architecture Mapping & Static Analysis Engine*
 
-**PanzaScope** is a standalone, polyglot static analysis suite designed for **zero-latency architectural mapping** of complex codebases (Unity/C#, Python, Java, C++, HTML, UXML, USS, CSS, JS). It transforms raw directory structures into an interactive **cosmological relational graph** (the *Planetarium*), while surgically optimizing context payloads for Local and Cloud LLMs through our proprietary **Eco-Scan protocol**, slashing token waste by up to **95%**.
+**PanzaScope** is a standalone, polyglot static analysis suite designed for **zero-latency architectural mapping** of complex codebases (Unity/C#, Python, Java, C++, HTML, UXML, USS, CSS, JS). It transforms raw directory structures into an interactive **cosmological relational graph** (the *Planetarium*), while surgically optimizing context payloads for Local and Cloud LLMs through our proprietary **Eco-Scan protocol**, slashing token waste by up to **60%**.
 
 ⚠️ **Release Status:** The native Unity Editor integration is currently pending approval by the Unity Asset Store team. Stay tuned for the official launch! You can star this repository to get notified as soon as it goes live.
 
