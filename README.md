@@ -54,7 +54,7 @@ The *Planetarium* map uses custom orbital geometries and distinct colors to repr
 ### Installation & Run
 
 1. **Clone the repository:**
-bash
+'''bash
    git clone [https://github.com/Panzadabira/PanzaScope.git](https://github.com/Panzadabira/PanzaScope.git)
    cd PanzaScope
 Install dependencies:
