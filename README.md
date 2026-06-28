@@ -55,29 +55,29 @@ The *Planetarium* map uses custom orbital geometries and distinct colors to repr
 
 **Clone the repository**
 
-'''bash
+```bash
 git clone https://github.com/Panzadabira/PanzaScope.git
 cd PanzaScope
-'''
+```
 
 **Install dependencies**
 
-'''bash
+```bash
 pip install -r requirements.txt
-'''
+```
 
 **Launch the model (Optional for local AI analysis)**
 
-'''bash
+```bash
 ollama pull qwen2.5-coder:7b
 ollama serve
-'''
+```
 
 **Run the tool**
 
-'''bash
+```bash
 python main.py
-'''
+```
 
    ---
 
