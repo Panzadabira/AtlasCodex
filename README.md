@@ -1,7 +1,11 @@
 ﻿# PanzaScope (v1.0.0)
 ### *Universal Polyglot Architecture Mapping & Static Analysis Engine*
 
-**PanzaScope** is a standalone, polyglot static analysis suite designed for **zero-latency architectural mapping** of complex codebases (Unity/C#, Python, Java, C++, HTML, UXML, USS, CSS, JS). It transforms raw directory structures into an interactive **cosmological relational graph** (the *Planetarium*), while surgically optimizing context payloads for Local and Cloud LLMs through our proprietary **Eco-Scan protocol**, slashing token waste by up to **60%**.
+Spaghetti code kills projects. Bloated context kills AI. 
+
+**PanzaScope** fixes both.
+
+​Stop feeding raw scripts to your LLMs. PanzaScope visualizes complex dependencies in milliseconds and extracts logic-stripped JSON blueprints, saving you hours of refactoring and up to 60% in token waste.
 
 
 <p align="center">
