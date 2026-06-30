@@ -5,7 +5,7 @@ Spaghetti code kills projects. Bloated context kills AI.
 
 **PanzaScope** fixes both.
 
-​Stop feeding raw scripts to your LLMs. PanzaScope visualizes complex dependencies in milliseconds and extracts logic-stripped JSON blueprints, saving you hours of refactoring and up to 60% in token waste.
+​Stop feeding raw scripts to your LLMs. PanzaScope visualizes complex dependencies in milliseconds and extracts logic-stripped JSON blueprints, saving you hours of refactoring and up to 60% in token waste depending on the context you choose to copy.
 
 
 <p align="center">
