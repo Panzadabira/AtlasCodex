@@ -1,4 +1,13 @@
 ﻿# PanzaScope (v1.0.0)
+ <p align="center">
+  <a href="https://github.com/Panzadabira/PanzaScope"><img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%2B-blue.svg?logo=python&logoColor=white" alt="Python 3.10+"></a>
+  <a href="https://ollama.com"><img src="https://img.shields.io/badge/AI-Ollama%20%7C%20qwen2.5--coder-8A2BE2?logo=ollama&logoColor=white" alt="Ollama"></a>
+  <a href="https://assetstore.unity.com/packages/tools/utilities/panzascope-ai-dependency-mapper-380466"><img src="https://img.shields.io/badge/Unity-Asset%20Store-000000?logo=unity&logoColor=white" alt="Unity Asset"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://github.com/Panzadabira/PanzaScope/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
+</p>
+
 ### *Universal Polyglot Architecture Mapping & Static Analysis Engine*
 
 Spaghetti code kills projects. Bloated context kills AI. 
