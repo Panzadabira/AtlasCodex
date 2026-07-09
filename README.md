@@ -28,17 +28,65 @@ This project is a labor of love and a testament to the power of open-source coll
 
 ## Core Features
 
-* **Dual-Stream Architecture:** Decouples human visual telemetry from machine analysis. Generates a gorgeous, hardware-accelerated interactive HTML report (*Planetarium*) and a highly compressed, syntax-stripped JSON blueprint (`_LLM_Payload.json`) for AI context injection.
-* **Eco-Scan Protocol (Blueprint Extraction):** Prevents context window saturation. Strips logic method bodies and extracts structural DOM hierarchies (IDs, Classes, Tags), preserving the system's behavioral signature at a fraction of the token cost.
-* **Privacy-First Ollama Integration:** Built natively to interface with `qwen2.5-coder:7b`. Analyze commercial-grade proprietary codebases **entirely offline** on your local machine with zero data leaks, zero latency, and zero token costs.
-* **DEFCON Telemetry Matrix:** Evaluates system stability and coupling density in real-time:
-  * 🟢 **DEFCON 1 (Stable):** Low coupling, modular hierarchy.
-  * 🟡 **DEFCON 2 (Fragile):** Moderate dependency propagation.
-  * 🔴 **DEFCON 3 (Critical):** High risk of systemic regression.
-* **God Object Shield:** Automatically highlights structural monoliths ($\ge 7$ direct dependencies) with heavy node borders to prevent cascading bugs.
-* **Anti-Ouroboros Protection:** Safeguards scanning pipelines from recursive loops by dynamically isolating generated outputs.
-* **Delta Engine & Hot-Reload:** Bypasses redundant scans via file metadata, enabling immediate browser hot-reloading.
+### Interactive Architecture Visualization
+Generates two complementary outputs from a single scan:
+- an interactive, hardware-accelerated HTML dependency map (Planetarium) for human exploration;
+- a lightweight `_LLM_Payload.json` blueprint optimized for AI assistants.
 
+This separates visual analysis from machine-readable context, allowing both humans and LLMs to work with the same project efficiently.
+
+---
+
+### Optimized AI Context Extraction
+Reduces context window usage by removing implementation details while preserving project structure.
+
+The generated blueprint contains:
+- files and dependencies
+- class hierarchies
+- methods and signatures
+- HTML DOM structure (IDs, Classes, Tags)
+- architectural relationships
+
+This provides LLMs with the information needed to understand the codebase while significantly reducing token usage.
+
+---
+
+### Local-First AI Integration
+Built to work natively with Ollama and models such as `qwen2.5-coder:7b`.
+
+Analyze proprietary or commercial codebases entirely offline:
+- zero cloud uploads
+- zero API costs
+- zero data leaks
+- low latency
+
+---
+
+### Coupling & Stability Analysis
+Continuously evaluates dependency density and architectural health.
+
+Projects are classified into three risk levels:
+
+🟢 Stable — low coupling and modular architecture
+
+🟡 Fragile — increasing dependency propagation
+
+🔴 Critical — high coupling with elevated regression risk
+
+---
+
+### God Object Detection
+Highlights classes or components with an unusually high number of direct dependencies (≥7), helping identify potential architectural bottlenecks before they become maintenance problems.
+
+---
+
+### Safe Recursive Scanning
+Automatically ignores generated reports and output folders, preventing recursive scans and infinite processing loops.
+
+---
+
+### Incremental Scanning
+Uses file metadata to skip unchanged files, dramatically reducing scan time while enabling instant browser hot-reloading during development.
 ---
 
 ## Cosmology & Layer Color Legend
