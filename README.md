@@ -18,7 +18,7 @@ Spaghetti code kills projects. Bloated context kills AI.
 
 
 <p align="center">
-  <img src="demo.gif" alt="PanzaScope Demo" width="700">
+  <img src="demo.gif" alt="PanzaScope Demo" width="500">
 </p>
 
 ### Open-Source Collaboration
