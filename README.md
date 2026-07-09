@@ -87,6 +87,7 @@ Automatically ignores generated reports and output folders, preventing recursive
 
 ### Incremental Scanning
 Uses file metadata to skip unchanged files, dramatically reducing scan time while enabling instant browser hot-reloading during development.
+
 ---
 
 ## Cosmology & Layer Color Legend
