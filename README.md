@@ -103,11 +103,6 @@ The *Planetarium* map uses custom orbital geometries and distinct colors to repr
 
 ## Getting Started
 
-> **🛑 DevTools bottleneck?**
-> Tired of Alt-Tabbing between the terminal and Unity?
-> **Get PanzaScope for Unity Editor (Native Integration)**
-> *Hot-Reload, Inspector Ping, and Native UI Toolkit Integration.*
-
 ### Prerequisites
 * **Python 3.10+**
 * **requests** library
@@ -152,7 +147,7 @@ Available for 42.00 CHF — the ultimate answer to Life, the Universe, and your 
 The Premium Unity Asset integrates the Planetarium graph directly inside Unity as a native Editor Window (using UI Toolkit), featuring automatic hot-reloads on script saves, custom editor layouts, and instant one-click pinging of files in the project Inspector.
 
 The core engine remains free and open-source. If you find PanzaScope valuable, consider supporting its long-term development by purchasing the Premium Unity Editor Integration.
-[https://assetstore.unity.com/packages/tools/utilities/panzascope-ai-dependency-mapper-380466]
+https://assetstore.unity.com/packages/tools/utilities/panzascope-ai-dependency-mapper-380466
 
 ___
 
