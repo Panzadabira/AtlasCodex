@@ -151,17 +151,6 @@ https://assetstore.unity.com/packages/tools/utilities/panzascope-ai-dependency-m
 
 ___
 
-## Base File Architecture
-**main.py**: Hardened entrypoint.
-
-**Panza_UI.py**: Interactive hub (Tkinter) with GitHub Dark aesthetics.
-
-**Panza_Generator.py**: Pipeline coordinator.
-**Panza_Analyzer.py**: Extensible static analysis hub (Strategy Pattern).
-
-**PanzaTemplate.html**: High-performance canvas view (Glassmorphism & Vis.js).
-
-**processors/**: The extensible heart — add new language processors here!
 
 ⚖️ **License: Distributed under the MIT License.**
 
