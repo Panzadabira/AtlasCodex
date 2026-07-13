@@ -473,15 +473,86 @@ class AtlasAppUI:
         self.root.after(0, lambda: self.run_btn.config(state="normal"))
 
     def _handle_git_cloning(self, git_url):
+        import stat # Necessario per bypassare i file lock di Windows
+
+        def remove_readonly(func, path, exc_info):
+            """Rimuove l'attributo di sola lettura dai file di Windows (es. cartella .git)"""
+            try:
+                os.chmod(path, stat.S_IWRITE)
+                func(path)
+            except Exception as e:
+                logging.error(f"Errore rimozione file lock su {path}: {e}")
+
         workspace_dir = os.path.join(self.app_root, "Atlas_Workspace")
+        
+        # 1. PULIZIA SICURA: Bypassa il File Lock di Windows sulla cartella .git
         if os.path.exists(workspace_dir):
-            try: shutil.rmtree(workspace_dir)
-            except Exception: pass
+            try: 
+                shutil.rmtree(workspace_dir, onerror=remove_readonly)
+            except Exception as e: 
+                logging.error(f"Impossibile pulire il workspace: {e}")
+                self.root.after(0, lambda: messagebox.showerror(
+                    "Errore di Sistema", 
+                    f"Impossibile svuotare la cartella di lavoro.\nFile bloccato da un altro processo.\n\n{e}"
+                ))
+                return None
+
         os.makedirs(workspace_dir, exist_ok=True)
+        
+        # 2. SETUP AMBIENTE GIT: Previene il blocco del thread sui repo privati
+        git_env = os.environ.copy()
+        git_env["GIT_TERMINAL_PROMPT"] = "0"  # Forza Git a fallire subito invece di aspettare la password
+
         try:
-            subprocess.run(["git", "clone", git_url, workspace_dir], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # Aggiorniamo la UI per far sapere all'utente che stiamo scaricando
+            self.root.after(0, lambda: self.status_msg_var.set("Clonazione del repository in corso... Attendere."))
+            
+            # 3. ESECUZIONE CON TIMEOUT E CATTURA ERRORI
+            subprocess.run(
+                ["git", "clone", git_url, workspace_dir],
+                check=True, 
+                stdout=subprocess.PIPE, 
+                stderr=subprocess.PIPE,
+                text=True,
+                env=git_env,
+                timeout=120 # Timeout di sicurezza (2 minuti max)
+            )
             return workspace_dir
-        except Exception: return None
+
+        except subprocess.TimeoutExpired:
+            self.root.after(0, lambda: messagebox.showerror(
+                "Timeout Connessione", 
+                "L'operazione ha impiegato troppo tempo.\nVerifica la connessione o la dimensione del repository."
+            ))
+            return None
+            
+        except subprocess.CalledProcessError as e:
+            # Recuperiamo il vero errore restituito da Git
+            error_details = e.stderr if hasattr(e, 'stderr') and e.stderr else "Errore sconosciuto durante git clone."
+            
+            # Gestione errore specifico per repository privati/inesistenti
+            if "could not read Username" in error_details or "Authentication failed" in error_details or "not found" in error_details.lower():
+                msg = "Il repository è privato (richiede credenziali) oppure l'URL non esiste."
+            else:
+                msg = f"Impossibile clonare il repository.\n\nDettagli Git:\n{error_details}"
+                
+            logging.error(f"Git Clone Fallito: {error_details}")
+            self.root.after(0, lambda: messagebox.showerror("Errore Clone Git", msg))
+            return None
+            
+        except FileNotFoundError:
+            # Se Git non è installato o non è nelle variabili d'ambiente di Windows
+            self.root.after(0, lambda: messagebox.showerror(
+                "Git non trovato", 
+                "Comando 'git' non riconosciuto.\nAssicurati di aver installato Git e che sia presente nel PATH di sistema."
+            ))
+            return None
+            
+        except Exception as e:
+            # Fallback per qualsiasi altra anomalia non prevista
+            logging.error(f"Eccezione imprevista in git clone: {e}")
+            self.root.after(0, lambda: messagebox.showerror("Errore Imprevisto", f"Si è verificato un errore inatteso:\n{e}"))
+            return None
 
     def _on_close_cleanup(self):
         global _GLOBAL_SERVER

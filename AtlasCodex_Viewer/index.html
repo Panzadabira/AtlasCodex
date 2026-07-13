@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Atlas Codex</title>
+    <title>PanzaScope</title>
     <meta charset="UTF-8">
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <style>
@@ -34,6 +34,7 @@
         .tag.clickable:hover { transform: translateY(-2px); filter: brightness(1.4); box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
         
         pre { background: #010409; padding: 15px; border-radius: 6px; overflow-x: auto; font-size: 11px; border: 1px solid #30363d; color: #d1d7e0; line-height: 1.5; }
+        code { font-family: 'Consolas', 'Courier New', monospace; }
         .god-alert { background: rgba(248, 81, 73, 0.1); color: #f85149; border: 1px solid #f85149; padding: 10px; border-radius: 6px; font-size: 11px; margin-bottom: 15px; font-weight: bold; }
         
         .defcon-banner { padding: 12px; border-radius: 6px; font-weight: bold; text-align: center; margin-bottom: 15px; font-size: 12px; border: 1px solid; display: flex; align-items: center; justify-content: flex-start; }
@@ -72,9 +73,30 @@
 
         .banner-circle { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
         .legend-circle { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+
+        /* 🌀 STILI OVERLAY DI CARICAMENTO AUTOMATICO ANTI-VIBRAZIONE */
+        #loading-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0b0e14; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.4s ease;
+        }
+        .spinner {
+            width: 45px; height: 45px; border: 4px solid #161b22;
+            border-top: 4px solid #2ea043; border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin-bottom: 15px;
+        }
+        .loading-text { font-size: 14px; font-weight: bold; color: #2ea043; letter-spacing: 0.5px; font-family: monospace; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="load-title">🛰️ ATLAS PIPELINE: STABILIZING MAPPINGS...</div>
+    </div>
+
     <div id="filter-bar">
         <input type="text" id="search-input" placeholder="__L_SEARCH__" oninput="onSearch()">
         <div id="layer-filters" style="display: flex; gap: 8px;">
@@ -184,25 +206,22 @@
     <script src="atlas_data.js"></script>
 
     <script>
-        // Estraiamo la lingua o usiamo l'inglese come fallback di sicurezza
         var atlasLang = (typeof AtlasData !== 'undefined' && AtlasData.language) ? AtlasData.language.toLowerCase() : 'en';
-        // Inietta il file in maniera sincrona per renderlo pronto per il prossimo blocco
         document.write('<script src="' + atlasLang + '.js"><\/script>');
     </script>
 
     <script>
         var network, nodes, edges;
         var currentSelectedId = null;
-        var currentContextMode = 'target'; // Default: Target Full
+        var currentContextMode = 'map'; 
 
-        // 1. AUTO-TRANSLATOR AGGIORNATO PER DIZIONARI PIATTI
         document.addEventListener("DOMContentLoaded", function() {
             if (typeof AtlasData === 'undefined' || typeof AtlasLocalization === 'undefined') {
                 console.error("[Atlas Codex] Dati JSON o Dizionario atomico JS mancanti.");
                 return;
             }
 
-            var dict = AtlasLocalization; // Legge direttamente il dizionario piatto (es. it.js)
+            var dict = AtlasLocalization; 
             
             var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
                 acceptNode: function(node) {
@@ -242,13 +261,12 @@
             if(ts) ts.innerHTML = AtlasData.scan_timestamp;
         });
 
-        // 2. INITIALIZATION VIZ
         window.onload = function() {
             try {
                 if (typeof AtlasData === 'undefined') return;
 
                 nodes = new vis.DataSet(AtlasData.nodes.map(n => {
-                    var baseColor = n.layer==='L0'?'#a371f7':n.layer==='L1'?'#79c0ff':n.layer==='L2'?'#ffa657':n.layer==='L4'?'#f85149':'#7ee787';
+                    var baseColor = n.layer==='L0'?'#a371f7':n.layer==='L1'?'#79c0ff':n.layer==='L2'?'#ffa657':n.layer==='L3'?'#7ee787':'#f85149';
                     var computedShape = 'hexagon';
                     if (n.layer === 'L0') computedShape = 'star';
                     else if (n.layer === 'L1') computedShape = 'square';
@@ -265,7 +283,7 @@
                     return {
                         ...n, 
                         shape: computedShape,
-                        size: n.layer === 'L2' ? 35 : 22,
+                        size: n.layer === 'L2' ? 32 : 20,
                         color: { 
                             background: baseColor, border: borderStateColor,
                             highlight: { background: baseColor, border: '#ffffff' }
@@ -278,18 +296,40 @@
                 }));
 
                 edges = new vis.DataSet(AtlasData.edges.map(e => ({ 
-                    ...e, arrows: 'to', color: { color: '#444', opacity: 0.4 } 
+                    ...e, arrows: 'to', color: { color: '#444', opacity: 0.35 } 
                 })));
 
+                // 🔥 FISICA COMPACT CON SMORZAMENTO MASSIMO - RISOLVE LE OSCILLAZIONI INFINITE
                 var options = {
                     physics: { 
                         solver: 'barnesHut',
-                        barnesHut: { gravitationalConstant: -2000, centralGravity: 0.5, springLength: 100 },
-                        stabilization: { iterations: 100 }
+                        barnesHut: { 
+                            gravitationalConstant: -4000, 
+                            centralGravity: 0.12, 
+                            springLength: 105,
+                            springConstant: 0.04,
+                            damping: 0.28
+                        },
+                        stabilization: { 
+                            enabled: true,
+                            iterations: 1600, 
+                            updateInterval: 40
+                        }
                     }
                 };
 
                 network = new vis.Network(document.getElementById('network'), { nodes, edges }, options);
+
+                // 🔥 ANTI-MOTION LOCK: Congela all'istante la fisica non appena il grafo trova l'equilibrio stabile
+                network.once("stabilized", function() {
+                    network.setOptions({ physics: false });
+                    // Dissolve il pannello di caricamento
+                    var overlay = document.getElementById("loading-overlay");
+                    if (overlay) {
+                        overlay.style.opacity = 0;
+                        setTimeout(function() { overlay.style.display = "none"; }, 400);
+                    }
+                });
 
                 network.on("click", function(p) { 
                     if (p.nodes.length > 0) handleTagClick(p.nodes[0]);
@@ -302,12 +342,11 @@
             } catch (e) { console.error("Atlas Render Error:", e); }
         };
 
-        // FUNZIONE DI RECUPERO TESTO AGGIORNATA
         function getText(key) {
             if (typeof AtlasLocalization !== 'undefined' && AtlasLocalization[key]) {
                 return AtlasLocalization[key];
             }
-            return key; // Fallback alla chiave grezza se la traduzione manca
+            return key; 
         }
 
         function renderProjectOverview() {
@@ -385,7 +424,7 @@
                     while (lookAhead < code.length && (code[lookAhead] === ' ' || code[lookAhead] === '\t' || code[lookAhead] === '\r' || code[lookAhead] === '\n')) {
                         spaces += code[lookAhead]; lookAhead++;
                     }
-                    if (lookAhead < code.length && code[lookAhead] === '{') {
+                    if (lookAhead < code.length && lookAhead + 1 < code.length && code[lookAhead] === '{') {
                         output += spaces + "{ /* [ECO-SCAN] Implementazione rimossa da Atlas Codex */ }";
                         var braceCount = 1; lookAhead++;
                         while (lookAhead < code.length && braceCount > 0) {
@@ -416,7 +455,6 @@
             if (currentSelectedId) updateAiRiskIndicator(currentSelectedId);
         }
 
-        // COSTRUZIONE DEL PAYLOAD COMPLETO BASATO SULLE TRE VIE ARCHITETTURALI
         function buildExportPayload(id, mode) {
             var targetNode = nodes.get(id);
             if (!targetNode) return "";
@@ -424,9 +462,10 @@
             var payload = "// ==========================================\n // ATLAS CODEX - AI CONTEXT EXPORT\n";
             payload += "// TARGET SCRIPT: " + targetNode.id + "\n// CONTEXT MODE: " + mode.toUpperCase() + "\n // ==========================================\n\n";
             
-           var targetCode = (mode === 'map' && targetNode.slim_code) ? unesc(targetNode.slim_code) : unesc(targetNode.code);
-	   if (mode === 'map' && !targetNode.slim_code) targetCode = generateMethodMap(targetCode);
-	   payload += "// ---> SORGENTE TARGET COMPLETO: " + targetNode.id + " <---\n" + targetCode + "\n\n";
+            var targetCode = (mode === 'map' && targetNode.slim_code) ? unesc(targetNode.slim_code) : unesc(targetNode.code);
+            if (mode === 'map' && !targetNode.slim_code) targetCode = generateMethodMap(targetCode);
+            
+            payload += "// ---> SORGENTE TARGET COMPLETO: " + targetNode.id + " <---\n" + targetCode + "\n\n";
 
             var superiors = edges.get().filter(e => e.to === id).map(e => e.from);
             var uniqueSuperiors = [...new Set(superiors)];
@@ -435,7 +474,7 @@
                 uniqueSuperiors.forEach(function(supId) {
                     var sNode = nodes.get(supId);
                     if (sNode && sNode.code) {
-                        var finalCode = (mode === 'full') ? unesc(sNode.code) : generateMethodMap(unesc(sNode.code));
+                        var finalCode = (mode === 'full') ? unesc(sNode.code) : ((mode === 'map' && sNode.slim_code) ? unesc(sNode.slim_code) : generateMethodMap(unesc(sNode.code)));
                         payload += "// --- FILE: " + sNode.id + " ---\n" + finalCode + "\n\n";
                     }
                 });
@@ -450,7 +489,7 @@
                     validDeps.forEach(function(depId) {
                         var dNode = nodes.get(depId);
                         if (dNode && dNode.code) {
-                            var finalCode = (mode === 'full') ? unesc(dNode.code) : generateMethodMap(unesc(dNode.code));
+                            var finalCode = (mode === 'full') ? unesc(dNode.code) : ((mode === 'map' && dNode.slim_code) ? unesc(dNode.slim_code) : generateMethodMap(unesc(dNode.code)));
                             payload += "// --- FILE: " + dNode.id + " ---\n" + finalCode + "\n\n";
                         }
                     });
