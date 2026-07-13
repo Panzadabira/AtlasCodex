@@ -35,6 +35,19 @@ Generates two complementary outputs from a single scan:
 
 This separates visual analysis from machine-readable context, allowing both humans and LLMs to work with the same project efficiently.
 
+<br>
+
+<table align="center" style="border-collapse: collapse; border: none;">
+  <tr>
+    <td align="center" width="50%"><b>🌌 Planetarium: Full Project Cosmology</b></td>
+    <td align="center" width="50%"><b>🎯 System Focus: Node Inspection</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/map_full.jpg" alt="Planetarium Full Map" width="100%"></td>
+    <td align="center"><img src="assets/map_system.jpg" alt="System Focus Map" width="100%"></td>
+  </tr>
+</table>
+
 ---
 
 ### Optimized AI Context Extraction
