@@ -173,7 +173,18 @@ ollama serve
 python main.py
 ```
 
-   ---
+---
+
+ ##  What happens next?
+ 
+Running the command above will launch the PanzaScope UI Hub. You don't need to memorize any complex CLI arguments.
+Simply select your local project folder, choose your AI provider, and click Run. The engine will automatically generate the JSON blueprint and open the interactive Planetarium directly in your default browser.
+
+<p align="center">
+  <img src="UI_PanzaScope.png" alt="PanzaScope UI Setup Center" width="700">
+</p>
+
+---
 
 ### The Panza Labs Ecosystem
 This repository serves as the core open-source engine of PanzaScope. If you are developing complex gamedev pipelines and want a frictionless, unified workflow:
