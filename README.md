@@ -51,6 +51,22 @@ This provides LLMs with the information needed to understand the codebase while 
 
 ---
 
+### The Proof: 60-80% Token Reduction
+Notice how switching from **Full Code** to **API / Method Map Only** drops the token count from ~15,600 to ~3,000, shifting the AI hallucination risk from MEDIUM to LOW.
+
+<table align="center" style="border-collapse: collapse; border: none;">
+  <tr>
+    <td align="center" width="50%"><b>🔴 Traditional: Full Code Payload</b></td>
+    <td align="center" width="50%"><b>🟢 PanzaScope: Eco-Scan Blueprint</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/tokens-full.png" alt="Full Code Tokens" width="100%"></td>
+    <td align="center"><img src="assets/tokens-eco.png" alt="Eco-Scan Tokens" width="100%"></td>
+  </tr>
+</table>
+
+---
+
 ### Local-First AI Integration
 Built to work natively with Ollama and models such as `qwen2.5-coder:7b`.
 
