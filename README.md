@@ -60,8 +60,8 @@ Notice how switching from **Full Code** to **API / Method Map Only** drops the t
     <td align="center" width="50%"><b>🟢 PanzaScope: Eco-Scan Blueprint</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="assets/tokens_full.png" alt="token_full" width="100%"></td>
-    <td align="center"><img src="assets/tokens_eco.png" alt="token_eco" width="100%"></td>
+    <td align="center"><img src="tokens_full.png" alt="Full Code Payload" width="100%"></td>
+    <td align="center"><img src="tokens_eco.png" alt=" Eco-Scan Blueprint" width="100%"></td>
   </tr>
 </table>
 
