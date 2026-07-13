@@ -18,7 +18,7 @@ Spaghetti code kills projects. Bloated context kills AI.
 
 
 <p align="center">
-  <img src="demo.gif" alt="PanzaScope Demo" width="400">
+  <img src="demo.gif" alt="PanzaScope Demo" width="500">
 </p>
 
 ### Open-Source Collaboration
@@ -181,7 +181,7 @@ Running the command above will launch the PanzaScope UI Hub. You don't need to m
 Simply select your local project folder, choose your AI provider, and click Run. The engine will automatically generate the JSON blueprint and open the interactive Planetarium directly in your default browser.
 
 <p align="center">
-  <img src="UI_PanzaScope.png" alt="PanzaScope UI Setup Center" width="700">
+  <img src="UI_PanzaScope.png" alt="PanzaScope UI Setup Center" width="400">
 </p>
 
 ---
