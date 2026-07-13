@@ -50,6 +50,14 @@ This separates visual analysis from machine-readable context, allowing both huma
 
 ---
 
+### True Polyglot Architecture
+PanzaScope doesn't just read text; it understands syntax. Using dedicated Language Processors, it surgically extracts structural blueprints (class signatures, HTML/DOM anchors, properties) while stripping away heavy logic bodies.
+
+* **Natively Supported:** C#, C++, C, Python, JavaScript, Lua, Ruby, HTML, CSS, UXML, USS, JSON, XML, and YAML.
+* **Infinitely Extensible:** Built on a modular plugin system. Need to map a new language like Rust or Go? Just drop a custom Python script into the `processors/` folder—the engine will automatically load it and apply your specific extraction rules.
+  
+---
+
 ### Optimized AI Context Extraction
 Reduces context window usage by removing implementation details while preserving project structure.
 
