@@ -22,7 +22,10 @@ Spaghetti code kills projects. Bloated context kills AI.
 </p>
 
 ### Open-Source Collaboration
-This project is a labor of love and a testament to the power of open-source collaboration. I welcome contributions from developers, researchers, and enthusiasts across all levels of expertise. Whether you have a bug fix, a new feature, or just want to share your thoughts, check the Issues tab for open tasks or open a new one to propose a feature.
+I welcome contributions from developers, researchers, and enthusiasts across all levels of expertise. 
+
+**Looking for a place to start?**
+Whether you have a bug fix, a new feature, or just want to share your thoughts, check the **[Issues tab](link-alle-issues)** for open tasks or open a new one to propose a feature. Look for tasks labeled with `good first issue` or `help wanted`—they are specifically designed to be highly modular and easy to pick up!
 
 ---
 
@@ -54,7 +57,8 @@ This separates visual analysis from machine-readable context, allowing both huma
 PanzaScope doesn't just read text; it understands syntax. Using dedicated Language Processors, it surgically extracts structural blueprints (class signatures, HTML/DOM anchors, properties) while stripping away heavy logic bodies.
 
 * **Natively Supported:** C#, C++, C, Python, JavaScript, Lua, Ruby, HTML, CSS, UXML, USS, JSON, XML, and YAML.
-* **Infinitely Extensible:** Built on a modular plugin system. Need to map a new language like Rust or Go? Just drop a custom Python script into the `processors/` folder—the engine will automatically load it and apply your specific extraction rules.
+* **Infinitely Extensible:** Built on a modular plugin system. Need to map a new language like Rust, Go, or TypeScript? Just drop a custom Python script into the `processors/` folder—the engine will automatically load it and apply your specific extraction rules. 
+   **[Check out our "Good First Issues"](link-alla-tua-issue)** to help us expand PanzaScope's language support!
   
 ---
 
